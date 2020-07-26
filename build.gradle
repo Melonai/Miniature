@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group 'me.mel'
+version '1.0'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'net.dv8tion:JDA:4.2.0_168'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+    compile 'io.github.cdimascio:java-dotenv:5.2.1'
+    compile 'org.reflections:reflections:0.9.10'
+}
+
+mainClassName = 'me.mel.miniaturebot.Bot'

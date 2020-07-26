@@ -1,0 +1,10 @@
+/build
+/.idea
+/.gradle
+/out
+
+*.jar
+.env
+.gradletasknamecache
+
+!gradle-wrapper.jar
