@@ -1,6 +1,6 @@
 # ◕ Miniature
 
-Miniature is designed to be a simple and fun Discord bot made in JDA to be used in conjugation with other bot to achieve a more well-rounded server experience.
+Miniature is designed to be a simple and fun Discord bot made in JDA to be used in conjugation with other bots to achieve a more well-rounded server experience.
 
 ### Features 
 
