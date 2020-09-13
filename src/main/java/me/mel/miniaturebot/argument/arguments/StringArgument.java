@@ -1,24 +1,13 @@
 package me.mel.miniaturebot.argument.arguments;
 
-import me.mel.miniaturebot.argument.IArgument;
-import me.mel.miniaturebot.util.Range;
+import me.mel.miniaturebot.argument.Argument;
 
-public class StringArgument implements IArgument {
-    private final String name;
-    private final Range range;
-
-    public StringArgument(String name, Range range) {
-        this.name = name;
-        this.range = range;
+public class StringArgument extends Argument {
+    public StringArgument(String name, String input) {
+        super(name, input);
     }
 
-    @Override
-    public boolean check(String argument) {
-        return range.checkFits(argument.length());
-    }
-
-    @Override
-    public String getName() {
-        return name;
+    public String get() {
+        return this.getInput();
     }
 }

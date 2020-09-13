@@ -3,15 +3,11 @@ package me.mel.miniaturebot.command;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
-import java.util.HashMap;
-
 public class CommandContext {
     private final GuildMessageReceivedEvent event;
-    private final HashMap<String, String> args;
 
-    public CommandContext(GuildMessageReceivedEvent event, HashMap<String, String> args) {
+    public CommandContext(GuildMessageReceivedEvent event) {
         this.event = event;
-        this.args = args;
     }
 
     public Guild getGuild() {
@@ -22,7 +18,11 @@ public class CommandContext {
         return this.event;
     }
 
-    public String getArg(String key) {
-        return this.args.get(key);
+    public void reply(String message) {
+        this.event.getChannel().sendMessage(message).queue();
+    }
+
+    public void replyFormat(String format, Object... args) {
+        this.event.getChannel().sendMessageFormat(format, args).queue();
     }
 }

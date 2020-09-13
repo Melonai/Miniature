@@ -21,7 +21,7 @@ public class Range {
         return new Range(null, higher);
     }
 
-    public static Range all() {
+    public static Range any() {
         return new Range(null, null);
     }
 

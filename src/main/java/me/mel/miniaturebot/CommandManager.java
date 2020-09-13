@@ -1,7 +1,8 @@
 package me.mel.miniaturebot;
 
-import me.mel.miniaturebot.argument.IArgument;
+import me.mel.miniaturebot.argument.Argument;
 import me.mel.miniaturebot.command.CommandContext;
+import me.mel.miniaturebot.command.CommandExecutor;
 import me.mel.miniaturebot.command.ICommand;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.reflections.Reflections;
@@ -13,7 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class CommandManager {
-    private final List<ICommand> commands = new ArrayList<>();
+    private final List<CommandExecutor> commands = new ArrayList<>();
     private static final Logger logger = LoggerFactory.getLogger(Listener.class);
 
     public CommandManager() {
@@ -36,47 +37,32 @@ public class CommandManager {
             throw new IllegalArgumentException("One or more handles of the new command are already occupied.");
         }
 
-        commands.add(newCommand);
-    }
-
-    @Nullable
-    private ICommand findCommandByHandle(String handle) {
-        for (ICommand command : this.commands) {
-            if (command.getHandles().contains(handle)) {
-                return command;
-            }
+        try {
+            commands.add(new CommandExecutor(newCommand));
+        } catch (Exception e) {
+            LoggerFactory.getLogger(newCommand.getClass()).error(e.getMessage());
         }
-        return null;
     }
 
     @Nullable
-    private HashMap<String, String> checkArguments(List<String> givenArguments, List<IArgument> neededArguments) {
-        if (neededArguments.size() == givenArguments.size()) {
-            int argumentAmount = neededArguments.size();
-            HashMap<String, String> cleanArguments = new HashMap<>();
-            for (int i = 0; i < argumentAmount; i++) {
-                IArgument currentNeededArgument = neededArguments.get(i);
-                String currentGivenArgument = givenArguments.get(i);
-                if (currentNeededArgument.check(currentGivenArgument)) {
-                    cleanArguments.put(currentNeededArgument.getName(), currentGivenArgument);
-                } else {
-                    return null;
-                }
+    private CommandExecutor findCommandByHandle(String handle) {
+        for (CommandExecutor executor : this.commands) {
+            if (executor.goesByHandle(handle)) {
+                return executor;
             }
-            return cleanArguments;
         }
         return null;
     }
 
     public void handle(GuildMessageReceivedEvent event, String[] words) {
         String handle = words[0];
-        ICommand foundCommand = this.findCommandByHandle(handle);
-        if (foundCommand != null) {
-            List<String> givenArguments = Arrays.asList(words).subList(1, words.length);
-            HashMap<String, String> argumentMap = this.checkArguments(givenArguments, foundCommand.getArguments());
-            if (argumentMap != null) {
-                CommandContext ctx = new CommandContext(event, argumentMap);
-                foundCommand.run(ctx);
+        CommandExecutor command = this.findCommandByHandle(handle);
+        if (command != null) {
+            List<String> userArguments = Arrays.asList(words).subList(1, words.length);
+            List<Argument> matchedArguments = command.matchArguments(userArguments);
+            if (matchedArguments != null) {
+                CommandContext ctx = new CommandContext(event);
+                command.execute(ctx, matchedArguments);
             }
         }
     }
