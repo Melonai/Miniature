@@ -1,13 +1,17 @@
 package me.mel.miniaturebot.argument.arguments;
 
 import me.mel.miniaturebot.argument.Argument;
+import me.mel.miniaturebot.argument.UnmatchedArgumentException;
 
-public class StringArgument extends Argument {
-    public StringArgument(String name, String input) {
-        super(name, input);
+import java.lang.annotation.Annotation;
+
+public class StringArgument extends Argument<String> {
+    public StringArgument(String name, String input, Annotation[] annotations) throws UnmatchedArgumentException {
+        super(name, input, annotations);
     }
 
-    public String get() {
+    @Override
+    public String getConstructed() {
         return this.getInput();
     }
 }

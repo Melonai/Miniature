@@ -1,5 +1,8 @@
 package me.mel.miniaturebot.util;
 
+import me.mel.miniaturebot.argument.options.Ranged;
+import me.mel.miniaturebot.argument.options.Sized;
+
 import javax.annotation.Nullable;
 
 public class Range {
@@ -11,6 +14,16 @@ public class Range {
     public Range(@Nullable Integer lower, @Nullable Integer upper) {
         this.lower = lower;
         this.upper = upper;
+    }
+
+    public Range(Sized annotation) {
+        this.lower = annotation.from();
+        this.upper = annotation.to();
+    }
+
+    public Range(Ranged annotation) {
+        this.lower = annotation.from();
+        this.upper = annotation.to();
     }
 
     public static Range fromLower(Integer lower) {

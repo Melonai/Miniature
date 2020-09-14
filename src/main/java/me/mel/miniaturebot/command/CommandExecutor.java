@@ -1,8 +1,11 @@
 package me.mel.miniaturebot.command;
 
 import me.mel.miniaturebot.argument.Argument;
+import me.mel.miniaturebot.argument.OptionHolder;
+import me.mel.miniaturebot.argument.UnmatchedArgumentException;
 
 import javax.annotation.Nullable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -56,17 +59,24 @@ public class CommandExecutor {
     }
 
     @Nullable
-    public List<Argument> matchArguments(List<String> userArguments) {
+    public List<Argument> constructArguments(List<String> userArguments) {
         List<Argument> constructedArguments = new ArrayList<>();
         if (userArguments.size() == argumentParameters.size()) {
             for (int i = 0; i < argumentParameters.size(); i++) {
                 try {
-                    String name = argumentParameters.get(i).getName();
+                    Parameter parameter = argumentParameters.get(i);
+                    String name = parameter.getName();
                     String input = userArguments.get(i);
-                    Argument argument = (Argument) argumentParameters.get(i).getType().getDeclaredConstructor(String.class, String.class).newInstance(name, input);
+                    Annotation[] annotations = parameter.getAnnotations();
+                    Argument argument = (Argument) parameter.getType().getDeclaredConstructor(String.class, String.class, Annotation[].class).newInstance(name, input, annotations);
                     constructedArguments.add(argument);
-                } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+                } catch (InstantiationException | NoSuchMethodException | IllegalAccessException e) {
                     e.printStackTrace();
+                    return null;
+                } catch (InvocationTargetException e) {
+                    if (!(e.getTargetException() instanceof UnmatchedArgumentException)) {
+                        e.printStackTrace();
+                    }
                     return null;
                 }
             }

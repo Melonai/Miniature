@@ -59,10 +59,12 @@ public class CommandManager {
         CommandExecutor command = this.findCommandByHandle(handle);
         if (command != null) {
             List<String> userArguments = Arrays.asList(words).subList(1, words.length);
-            List<Argument> matchedArguments = command.matchArguments(userArguments);
+            List<Argument> matchedArguments = command.constructArguments(userArguments);
+            CommandContext ctx = new CommandContext(event);
             if (matchedArguments != null) {
-                CommandContext ctx = new CommandContext(event);
                 command.execute(ctx, matchedArguments);
+            } else {
+                ctx.reply("Malformed arguments.");
             }
         }
     }
