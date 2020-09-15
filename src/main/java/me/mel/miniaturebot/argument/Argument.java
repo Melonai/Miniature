@@ -1,6 +1,7 @@
 package me.mel.miniaturebot.argument;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 
 public abstract class Argument<C> {
     private static final OptionHolder optionHolder = OptionHolder.getInstance();
@@ -13,8 +14,10 @@ public abstract class Argument<C> {
         this.name = name;
         String modifiedInput = input;
 
+        Class<C> constructedClass = (Class<C>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+
         for (Annotation annotation : annotations) {
-            IOption option = optionHolder.getOption(Object.class, annotation.annotationType());
+            IOption option = optionHolder.getOption(constructedClass, annotation.annotationType());
             if (option.inputAllowedByOption(input, annotation)) {
                 modifiedInput = option.mutateInput(modifiedInput, annotation);
             } else {
@@ -23,18 +26,18 @@ public abstract class Argument<C> {
         }
 
         this.input = modifiedInput;
-        C constructed = this.getConstructed();
+        C modifiedConstructed = this.getConstructed();
 
         for (Annotation annotation : annotations) {
-            IOption option = optionHolder.getOption(constructed.getClass(), annotation.annotationType());
-            if (option.constructedAllowedByOption(constructed, annotation)) {
-                constructed = (C) option.mutateConstructed(constructed, annotation);
+            IOption option = optionHolder.getOption(constructedClass, annotation.annotationType());
+            if (option.constructedAllowedByOption(modifiedConstructed, annotation)) {
+                modifiedConstructed = (C) option.mutateConstructed(modifiedConstructed, annotation);
             } else {
                 throw new UnmatchedArgumentException("Argument couldn't be constructed.");
             }
         }
 
-        this.constructed = constructed;
+        this.constructed = modifiedConstructed;
     }
 
     public String getName() {
