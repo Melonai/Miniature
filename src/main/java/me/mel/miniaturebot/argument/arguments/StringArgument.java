@@ -1,12 +1,12 @@
 package me.mel.miniaturebot.argument.arguments;
 
 import me.mel.miniaturebot.argument.Argument;
-import me.mel.miniaturebot.argument.UnmatchedArgumentException;
+import me.mel.miniaturebot.errors.UnmatchedArgumentError;
 
 import java.lang.annotation.Annotation;
 
 public class StringArgument extends Argument<String> {
-    public StringArgument(String name, String input, Annotation[] annotations) throws UnmatchedArgumentException {
+    public StringArgument(String name, String input, Annotation[] annotations) throws UnmatchedArgumentError {
         super(name, input, annotations);
     }
 

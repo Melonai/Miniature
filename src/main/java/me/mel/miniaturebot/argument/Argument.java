@@ -1,5 +1,9 @@
 package me.mel.miniaturebot.argument;
 
+import me.mel.miniaturebot.argument.option.IOption;
+import me.mel.miniaturebot.argument.option.OptionHolder;
+import me.mel.miniaturebot.errors.UnmatchedArgumentError;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 
@@ -10,7 +14,7 @@ public abstract class Argument<C> {
     private final C constructed;
 
     @SuppressWarnings("unchecked")
-    public Argument(String name, String input, Annotation[] annotations) throws UnmatchedArgumentException {
+    public Argument(String name, String input, Annotation[] annotations) throws UnmatchedArgumentError {
         this.name = name;
         String modifiedInput = input;
 
@@ -21,7 +25,7 @@ public abstract class Argument<C> {
             if (option.inputAllowedByOption(input, annotation)) {
                 modifiedInput = option.mutateInput(modifiedInput, annotation);
             } else {
-                throw new UnmatchedArgumentException("Argument couldn't be constructed.");
+                throw new UnmatchedArgumentError();
             }
         }
 
@@ -33,7 +37,7 @@ public abstract class Argument<C> {
             if (option.constructedAllowedByOption(modifiedConstructed, annotation)) {
                 modifiedConstructed = (C) option.mutateConstructed(modifiedConstructed, annotation);
             } else {
-                throw new UnmatchedArgumentException("Argument couldn't be constructed.");
+                throw new UnmatchedArgumentError();
             }
         }
 

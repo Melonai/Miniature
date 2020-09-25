@@ -1,9 +1,9 @@
 package me.mel.miniaturebot;
 
-import me.mel.miniaturebot.argument.Argument;
 import me.mel.miniaturebot.command.CommandContext;
-import me.mel.miniaturebot.command.CommandExecutor;
-import me.mel.miniaturebot.command.ICommand;
+import me.mel.miniaturebot.command.Command;
+import me.mel.miniaturebot.errors.UnknownError;
+import me.mel.miniaturebot.errors.UnmatchedArgumentError;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -14,12 +14,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class CommandManager {
-    private final List<CommandExecutor> commands = new ArrayList<>();
+    private final List<Command> commands = new ArrayList<>();
     private static final Logger logger = LoggerFactory.getLogger(Listener.class);
 
     public CommandManager() {
         Reflections reflections = new Reflections(CommandManager.class.getPackageName());
-        Set<Class<? extends ICommand>> foundCommands = reflections.getSubTypesOf(ICommand.class);
+        Set<Class<? extends Command>> foundCommands = reflections.getSubTypesOf(Command.class);
         foundCommands.forEach((command) -> {
             try {
                 addCommand(command.getDeclaredConstructor().newInstance());
@@ -30,7 +30,7 @@ public class CommandManager {
         logger.info("{} commands were loaded.", this.commands.size());
     }
 
-    private void addCommand(ICommand newCommand) {
+    private void addCommand(Command newCommand) {
         boolean handleOverlap = newCommand.getHandles().stream().anyMatch((handle) -> findCommandByHandle(handle) != null);
 
         if (handleOverlap) {
@@ -38,17 +38,17 @@ public class CommandManager {
         }
 
         try {
-            commands.add(new CommandExecutor(newCommand));
+            commands.add(newCommand);
         } catch (Exception e) {
             LoggerFactory.getLogger(newCommand.getClass()).error(e.getMessage());
         }
     }
 
     @Nullable
-    private CommandExecutor findCommandByHandle(String handle) {
-        for (CommandExecutor executor : this.commands) {
-            if (executor.goesByHandle(handle)) {
-                return executor;
+    private Command findCommandByHandle(String handle) {
+        for (Command command : this.commands) {
+            if (command.goesByHandle(handle)) {
+                return command;
             }
         }
         return null;
@@ -56,15 +56,16 @@ public class CommandManager {
 
     public void handle(GuildMessageReceivedEvent event, String[] words) {
         String handle = words[0];
-        CommandExecutor command = this.findCommandByHandle(handle);
+        Command command = this.findCommandByHandle(handle);
         if (command != null) {
-            List<String> userArguments = Arrays.asList(words).subList(1, words.length);
-            List<Argument> matchedArguments = command.constructArguments(userArguments);
+            String[] userArguments = Arrays.copyOfRange(words, 1, words.length);
             CommandContext ctx = new CommandContext(event);
-            if (matchedArguments != null) {
-                command.execute(ctx, matchedArguments);
-            } else {
-                ctx.reply("Malformed arguments.");
+            try {
+                command.execute(ctx, userArguments);
+            } catch (UnknownError unknownError) {
+                ctx.reply("Something unexpected happened.");
+            } catch (UnmatchedArgumentError unmatchedArgumentError) {
+                ctx.reply("Please check command usage.");
             }
         }
     }

@@ -1,4 +1,4 @@
-package me.mel.miniaturebot.argument;
+package me.mel.miniaturebot.argument.option;
 
 import org.reflections.Reflections;
 
@@ -32,7 +32,6 @@ public class OptionHolder {
         });
     }
 
-    @SuppressWarnings("unchecked")
     public <C, A> IOption getOption(C constructedType, A annotationType) {
         List<IOption> handlers = this.map.get(annotationType);
 
