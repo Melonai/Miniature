@@ -1,4 +1,4 @@
-package me.mel.miniaturebot;
+package com.melonai.miniature;
 
 import net.dv8tion.jda.api.JDABuilder;
 

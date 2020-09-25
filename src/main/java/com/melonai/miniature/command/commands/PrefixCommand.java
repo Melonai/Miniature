@@ -1,11 +1,11 @@
-package me.mel.miniaturebot.command.commands;
+package com.melonai.miniature.command.commands;
 
-import me.mel.miniaturebot.PrefixManager;
-import me.mel.miniaturebot.argument.arguments.StringArgument;
-import me.mel.miniaturebot.argument.option.options.Sized;
-import me.mel.miniaturebot.command.CommandContext;
-import me.mel.miniaturebot.command.CommandInfo;
-import me.mel.miniaturebot.command.Command;
+import com.melonai.miniature.argument.arguments.StringArgument;
+import com.melonai.miniature.argument.option.options.Sized;
+import com.melonai.miniature.command.CommandContext;
+import com.melonai.miniature.PrefixManager;
+import com.melonai.miniature.command.CommandInfo;
+import com.melonai.miniature.command.Command;
 
 @CommandInfo(name = "Prefix", handles = "prefix")
 public class PrefixCommand extends Command {

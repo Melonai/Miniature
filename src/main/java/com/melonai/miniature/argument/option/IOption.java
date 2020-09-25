@@ -1,4 +1,4 @@
-package me.mel.miniaturebot.argument.option;
+package com.melonai.miniature.argument.option;
 
 import javax.annotation.Nullable;
 

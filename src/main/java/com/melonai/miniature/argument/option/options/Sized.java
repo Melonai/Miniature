@@ -1,7 +1,7 @@
-package me.mel.miniaturebot.argument.option.options;
+package com.melonai.miniature.argument.option.options;
 
-import me.mel.miniaturebot.argument.option.IOption;
-import me.mel.miniaturebot.util.Range;
+import com.melonai.miniature.argument.option.IOption;
+import com.melonai.miniature.util.Range;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

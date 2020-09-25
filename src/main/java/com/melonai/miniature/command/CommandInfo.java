@@ -1,4 +1,4 @@
-package me.mel.miniaturebot.command;
+package com.melonai.miniature.command;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

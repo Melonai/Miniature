@@ -1,9 +1,9 @@
-package me.mel.miniaturebot;
+package com.melonai.miniature;
 
-import me.mel.miniaturebot.command.CommandContext;
-import me.mel.miniaturebot.command.Command;
-import me.mel.miniaturebot.errors.UnknownError;
-import me.mel.miniaturebot.errors.UnmatchedArgumentError;
+import com.melonai.miniature.command.CommandContext;
+import com.melonai.miniature.command.Command;
+import com.melonai.miniature.errors.UnknownError;
+import com.melonai.miniature.errors.UnmatchedArgumentError;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.reflections.Reflections;
 import org.slf4j.Logger;

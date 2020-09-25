@@ -1,7 +1,7 @@
-package me.mel.miniaturebot.argument.arguments;
+package com.melonai.miniature.argument.arguments;
 
-import me.mel.miniaturebot.argument.Argument;
-import me.mel.miniaturebot.errors.UnmatchedArgumentError;
+import com.melonai.miniature.errors.UnmatchedArgumentError;
+import com.melonai.miniature.argument.Argument;
 
 import java.lang.annotation.Annotation;
 

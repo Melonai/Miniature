@@ -1,7 +1,7 @@
-package me.mel.miniaturebot.util;
+package com.melonai.miniature.util;
 
-import me.mel.miniaturebot.argument.option.options.Ranged;
-import me.mel.miniaturebot.argument.option.options.Sized;
+import com.melonai.miniature.argument.option.options.Ranged;
+import com.melonai.miniature.argument.option.options.Sized;
 
 import javax.annotation.Nullable;
 

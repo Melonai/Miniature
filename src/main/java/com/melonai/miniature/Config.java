@@ -1,4 +1,4 @@
-package me.mel.miniaturebot;
+package com.melonai.miniature;
 
 import io.github.cdimascio.dotenv.Dotenv;
 

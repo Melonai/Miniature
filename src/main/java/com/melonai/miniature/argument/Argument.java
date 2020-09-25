@@ -1,8 +1,8 @@
-package me.mel.miniaturebot.argument;
+package com.melonai.miniature.argument;
 
-import me.mel.miniaturebot.argument.option.IOption;
-import me.mel.miniaturebot.argument.option.OptionHolder;
-import me.mel.miniaturebot.errors.UnmatchedArgumentError;
+import com.melonai.miniature.argument.option.IOption;
+import com.melonai.miniature.argument.option.OptionHolder;
+import com.melonai.miniature.errors.UnmatchedArgumentError;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;

@@ -1,8 +1,8 @@
-package me.mel.miniaturebot.command;
+package com.melonai.miniature.command;
 
-import me.mel.miniaturebot.argument.Argument;
-import me.mel.miniaturebot.errors.UnknownError;
-import me.mel.miniaturebot.errors.UnmatchedArgumentError;
+import com.melonai.miniature.argument.Argument;
+import com.melonai.miniature.errors.UnknownError;
+import com.melonai.miniature.errors.UnmatchedArgumentError;
 
 import java.util.Arrays;
 import java.util.List;
