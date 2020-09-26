@@ -3,7 +3,7 @@ plugins {
     id 'application'
 }
 
-group 'me.mel'
+group 'com.melonai'
 version '1.0'
 
 repositories {
@@ -16,5 +16,7 @@ dependencies {
     compile 'io.github.cdimascio:java-dotenv:5.2.1'
     compile 'org.reflections:reflections:0.9.10'
 }
+
+compileJava.options.compilerArgs.add '-parameters'
 
 mainClassName = 'com.melonai.miniature.Miniature'
