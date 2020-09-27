@@ -9,29 +9,20 @@ import java.lang.reflect.ParameterizedType;
 
 public abstract class Argument<C> {
     private static final OptionHolder optionHolder = OptionHolder.getInstance();
-    private final String name;
     private final String input;
     private final C constructed;
 
     @SuppressWarnings("unchecked")
-    public Argument(String name, String input, Annotation[] annotations) throws UnmatchedArgumentError {
-        this.name = name;
-        String modifiedInput = input;
+    public Argument(String input, Annotation[] annotations) throws UnmatchedArgumentError {
+        Class<C> constructedClass = (Class<C>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
-        Class<C> constructedClass = (Class<C>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        this.input = matchInput(input, annotations, constructedClass);
+        this.constructed = matchConstructed(this.getConstructed(), annotations, constructedClass);
+    }
 
-        for (Annotation annotation : annotations) {
-            IOption option = optionHolder.getOption(constructedClass, annotation.annotationType());
-            if (option.inputAllowedByOption(input, annotation)) {
-                modifiedInput = option.mutateInput(modifiedInput, annotation);
-            } else {
-                throw new UnmatchedArgumentError();
-            }
-        }
-
-        this.input = modifiedInput;
-        C modifiedConstructed = this.getConstructed();
-
+    @SuppressWarnings("unchecked")
+    private C matchConstructed(C constructed, Annotation[] annotations, Class<C> constructedClass) throws UnmatchedArgumentError {
+        C modifiedConstructed = constructed;
         for (Annotation annotation : annotations) {
             IOption option = optionHolder.getOption(constructedClass, annotation.annotationType());
             if (option.constructedAllowedByOption(modifiedConstructed, annotation)) {
@@ -40,12 +31,21 @@ public abstract class Argument<C> {
                 throw new UnmatchedArgumentError();
             }
         }
-
-        this.constructed = modifiedConstructed;
+        return modifiedConstructed;
     }
 
-    public String getName() {
-        return name;
+    @SuppressWarnings("unchecked")
+    private String matchInput(String input, Annotation[] annotations, Class<C> constructedClass) throws UnmatchedArgumentError {
+        String modifiedInput = input;
+        for (Annotation annotation : annotations) {
+            IOption option = optionHolder.getOption(constructedClass, annotation.annotationType());
+            if (option.inputAllowedByOption(input, annotation)) {
+                modifiedInput = option.mutateInput(modifiedInput, annotation);
+            } else {
+                throw new UnmatchedArgumentError();
+            }
+        }
+        return modifiedInput;
     }
 
     public String getInput() {

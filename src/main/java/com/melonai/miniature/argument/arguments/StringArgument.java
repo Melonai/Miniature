@@ -6,8 +6,8 @@ import com.melonai.miniature.argument.Argument;
 import java.lang.annotation.Annotation;
 
 public class StringArgument extends Argument<String> {
-    public StringArgument(String name, String input, Annotation[] annotations) throws UnmatchedArgumentError {
-        super(name, input, annotations);
+    public StringArgument(String input, Annotation[] annotations) throws UnmatchedArgumentError {
+        super(input, annotations);
     }
 
     @Override

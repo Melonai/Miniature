@@ -42,24 +42,28 @@ public class CommandExecutor {
         List<Argument> constructedArguments = new ArrayList<>();
         if (userArguments.length == this.argumentParameters.length) {
             for (int i = 0; i < this.argumentParameters.length; i++) {
-                try {
-                    Parameter parameter = this.argumentParameters[i];
-                    String name = parameter.getName();
-                    String input = userArguments[i];
-                    Annotation[] annotations = parameter.getAnnotations();
-                    Argument argument = (Argument) parameter.getType().getDeclaredConstructor(String.class, String.class, Annotation[].class).newInstance(name, input, annotations);
+                Argument argument = makeArgument(userArguments[i], this.argumentParameters[i]);
+                if (argument != null) {
                     constructedArguments.add(argument);
-                } catch (InstantiationException | NoSuchMethodException | IllegalAccessException e) {
-                    e.printStackTrace();
-                    return null;
-                } catch (InvocationTargetException e) {
-                    if (!(e.getTargetException() instanceof UnmatchedArgumentError)) {
-                        e.printStackTrace();
-                    }
+                } else {
                     return null;
                 }
             }
             return constructedArguments;
+        }
+        return null;
+    }
+
+    private Argument makeArgument(String input, Parameter parameter) {
+        try {
+            Annotation[] argumentChecks = parameter.getAnnotations();
+            return (Argument) parameter.getType().getDeclaredConstructor(String.class, Annotation[].class).newInstance(input, argumentChecks);
+        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            if (!(e.getTargetException() instanceof UnmatchedArgumentError)) {
+                e.printStackTrace();
+            }
         }
         return null;
     }
@@ -69,27 +73,35 @@ public class CommandExecutor {
     }
 
     private static Method[] findRunMethods(Command command) {
-        Method[] methods = command.getClass().getMethods();
+        Method[] allMethods = command.getClass().getMethods();
         List<Method> foundMethods = new ArrayList<>();
 
-        methodSweeper:
-        for (Method method : methods) {
-            if (method.getName().equalsIgnoreCase("run")) {
-
-                Parameter[] parameters = method.getParameters();
-                for (int i = 0; i < parameters.length; i++) {
-                    Class<?> argumentType = parameters[i].getType();
-                    if ((i == 0 && !argumentType.equals(CommandContext.class)) || (i > 0 && !argumentType.getSuperclass().equals(Argument.class))) {
-                        continue methodSweeper;
-                    }
-                }
-
+        for (Method method : allMethods) {
+            if (CommandExecutor.isMethodRunMethod(method)) {
                 method.setAccessible(true);
                 foundMethods.add(method);
             }
         }
 
-        foundMethods.sort(Comparator.comparingInt(Method::getParameterCount).reversed());
+        CommandExecutor.sortRunMethodsByPriority(foundMethods);
         return foundMethods.toArray(Method[]::new);
+    }
+
+    private static boolean isMethodRunMethod(Method method) {
+        if (method.getName().equalsIgnoreCase("run")) {
+            Parameter[] parameters = method.getParameters();
+            for (int i = 0; i < parameters.length; i++) {
+                Class<?> argumentType = parameters[i].getType();
+                if ((i == 0 && !argumentType.equals(CommandContext.class)) || (i > 0 && !argumentType.getSuperclass().equals(Argument.class))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private static void sortRunMethodsByPriority(List<Method> methods) {
+        methods.sort(Comparator.comparingInt(Method::getParameterCount).reversed());
     }
 }
