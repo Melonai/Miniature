@@ -1,5 +1,6 @@
 package com.melonai.miniature.command;
 
+import com.melonai.miniature.argument.RawArgument;
 import com.melonai.miniature.errors.UnmatchedArgumentError;
 import com.melonai.miniature.argument.Argument;
 import com.melonai.miniature.errors.UnknownError;
@@ -27,7 +28,7 @@ public class CommandExecutor {
         this.argumentParameters = Arrays.copyOfRange(parameters, 1, parameters.length);
     }
 
-    public void execute(CommandContext ctx, List<Argument> arguments) throws UnknownError {
+    public void execute(CommandContext ctx, List<RawArgument> arguments) throws UnknownError {
         List<Object> parameters = new ArrayList<>(arguments);
         parameters.add(0, ctx);
         try {
@@ -38,11 +39,11 @@ public class CommandExecutor {
     }
 
     @Nullable
-    public List<Argument> constructArguments(String[] userArguments) {
-        List<Argument> constructedArguments = new ArrayList<>();
+    public List<RawArgument> constructArguments(String[] userArguments) {
+        List<RawArgument> constructedArguments = new ArrayList<>();
         if (userArguments.length == this.argumentParameters.length) {
             for (int i = 0; i < this.argumentParameters.length; i++) {
-                Argument argument = makeArgument(userArguments[i], this.argumentParameters[i]);
+                RawArgument argument = makeArgument(userArguments[i], this.argumentParameters[i]);
                 if (argument != null) {
                     constructedArguments.add(argument);
                 } else {
@@ -54,10 +55,10 @@ public class CommandExecutor {
         return null;
     }
 
-    private Argument makeArgument(String input, Parameter parameter) {
+    private RawArgument makeArgument(String input, Parameter parameter) {
         try {
             Annotation[] argumentChecks = parameter.getAnnotations();
-            return (Argument) parameter.getType().getDeclaredConstructor(String.class, Annotation[].class).newInstance(input, argumentChecks);
+            return (RawArgument) parameter.getType().getDeclaredConstructor(String.class, Annotation[].class).newInstance(input, argumentChecks);
         } catch (InstantiationException | NoSuchMethodException | IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {

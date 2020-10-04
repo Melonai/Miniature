@@ -26,18 +26,6 @@ public class Range {
         this.upper = annotation.to();
     }
 
-    public static Range fromLower(Integer lower) {
-        return new Range(lower, null);
-    }
-
-    public static Range toHigher(Integer higher) {
-        return new Range(null, higher);
-    }
-
-    public static Range any() {
-        return new Range(null, null);
-    }
-
     public boolean checkFits(Integer toCheck) {
         return ((lower == null || lower <= toCheck) && (upper == null || upper >= toCheck));
     }

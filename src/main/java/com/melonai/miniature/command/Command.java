@@ -1,6 +1,6 @@
 package com.melonai.miniature.command;
 
-import com.melonai.miniature.argument.Argument;
+import com.melonai.miniature.argument.RawArgument;
 import com.melonai.miniature.errors.UnknownError;
 import com.melonai.miniature.errors.UnmatchedArgumentError;
 
@@ -16,7 +16,7 @@ public abstract class Command {
 
     public void execute(CommandContext ctx, String[] userArguments) throws UnknownError, UnmatchedArgumentError {
         for (CommandExecutor executor : executors) {
-            List<Argument> constructedArguments = executor.constructArguments(userArguments);
+            List<RawArgument> constructedArguments = executor.constructArguments(userArguments);
             if (constructedArguments != null) {
                 try {
                     executor.execute(ctx, constructedArguments);

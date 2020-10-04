@@ -18,8 +18,7 @@ public class CommandManager {
     private static final Logger logger = LoggerFactory.getLogger(Listener.class);
 
     public CommandManager() {
-        Reflections reflections = new Reflections(CommandManager.class.getPackageName());
-        Set<Class<? extends Command>> foundCommands = reflections.getSubTypesOf(Command.class);
+        Set<Class<? extends Command>> foundCommands = CommandManager.findCommandsWithReflection();
         foundCommands.forEach((command) -> {
             try {
                 addCommand(command.getDeclaredConstructor().newInstance());
@@ -28,6 +27,11 @@ public class CommandManager {
             }
         });
         logger.info("{} commands were loaded.", this.commands.size());
+    }
+
+    private static Set<Class<? extends Command>> findCommandsWithReflection() {
+        Reflections reflections = new Reflections(CommandManager.class.getPackageName());
+        return reflections.getSubTypesOf(Command.class);
     }
 
     private void addCommand(Command newCommand) {

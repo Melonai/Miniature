@@ -1,8 +1,9 @@
 package com.melonai.miniature.argument.option;
 
 import javax.annotation.Nullable;
+import java.lang.annotation.Annotation;
 
-public interface IOption<C, A> {
+public interface IOption<C, A extends Annotation> {
     default boolean inputAllowedByOption(String input, A annotation) {
         return true;
     }

@@ -1,43 +1,30 @@
 package com.melonai.miniature.argument.option;
 
-import org.reflections.Reflections;
+import com.melonai.miniature.argument.option.options.Ranged;
+import com.melonai.miniature.argument.option.options.Sized;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.*;
 
 public class OptionHolder {
     private static final OptionHolder instance = new OptionHolder();
-    private final HashMap<Class<? extends Annotation>, List<IOption>> map;
+    private final Map<Class<? extends Annotation>, IOption<?, Annotation>[]> map;
 
     @SuppressWarnings("unchecked")
-    private OptionHolder() {
-        this.map = new HashMap<>();
-        Reflections reflections = new Reflections(OptionHolder.class.getPackageName());
-        Set<Class<? extends IOption>> options = reflections.getSubTypesOf(IOption.class);
-        options.forEach((optionClass) -> {
-            ParameterizedType generic = (ParameterizedType) optionClass.getGenericInterfaces()[0];
-            Type[] typeArguments =  generic.getActualTypeArguments();
-            Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) typeArguments[1];
-
-            try {
-                IOption option = optionClass.getDeclaredConstructor().newInstance();
-                this.map.putIfAbsent(annotationClass, new ArrayList<>());
-                this.map.get(annotationClass).add(option);
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                e.printStackTrace();
-            }
-        });
+    public OptionHolder() {
+        this.map = new HashMap<>(){{
+            put(Ranged.class, new IOption[]{new Ranged.RangedOption()});
+            put(Sized.class, new IOption[]{new Sized.SizedOption()});
+        }};
     }
 
-    public <C, A> IOption getOption(C constructedType, A annotationType) {
-        List<IOption> handlers = this.map.get(annotationType);
+    public IOption<?, Annotation> getOption(Class<?> constructedType, Class<? extends Annotation> annotationType) {
+        IOption<?, Annotation>[] handlers = this.map.get(annotationType);
 
-        for (IOption handler : handlers) {
+        for (IOption<?, Annotation> handler : handlers) {
             Class<?> constructedExpected = (Class<?>) ((ParameterizedType) handler.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0];
-            if (constructedExpected.isAssignableFrom(constructedType.getClass())) {
+            if (constructedExpected.isAssignableFrom(constructedType)) {
                 return handler;
             }
         }
